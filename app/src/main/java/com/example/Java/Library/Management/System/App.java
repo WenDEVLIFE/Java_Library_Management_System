@@ -3,6 +3,9 @@
  */
 package com.example.Java.Library.Management.System;
 
+import com.example.Java.Library.Management.System.services.SQliteConnection;
+import java.sql.Connection;
+
 public class App {
     public static void main(String[] args) {
         
@@ -10,5 +13,13 @@ public class App {
         meow.setVisible(true);
         meow.setResizable(false);
         meow.setLocationRelativeTo(null);
+        Connection conn = SQliteConnection.connect();
+
+        if (conn != null) {
+            System.out.println("🎉 SQLite Test: SUCCESS!");
+            SQliteConnection.close(conn);
+        } else {
+            System.out.println("⚠️ SQLite Test: FAILED!");
+        }
     }
 }
