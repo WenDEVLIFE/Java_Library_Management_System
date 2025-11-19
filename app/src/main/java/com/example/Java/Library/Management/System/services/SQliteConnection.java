@@ -17,6 +17,16 @@ public class SQliteConnection {
 
     private static final String DB_URL = "jdbc:sqlite:library.db";
 
+    private static SQliteConnection instance;
+
+    // Singleton pattern to ensure single instance
+    public static SQliteConnection getInstance() {
+        if (instance == null) {
+            instance = new SQliteConnection();
+        }
+        return instance;
+    }
+
     // Connect to SQLite
     public static Connection connect() {
         Connection conn = null;
