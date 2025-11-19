@@ -4,11 +4,11 @@
 package com.example.Java.Library.Management.System;
 
 public class App {
-    public String getGreeting() {
-        return "Hello World!";
-    }
-
     public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+        
+        LoginView meow = new LoginView();
+        meow.setVisible(true);
+        meow.setResizable(false);
+        meow.setLocationRelativeTo(null);
     }
 }
