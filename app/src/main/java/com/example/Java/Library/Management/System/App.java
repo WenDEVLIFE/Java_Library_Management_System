@@ -4,10 +4,13 @@
 package com.example.Java.Library.Management.System;
 
 import com.example.Java.Library.Management.System.services.SQliteConnection;
+import com.formdev.flatlaf.FlatDarkLaf;
 import java.sql.Connection;
 
 public class App {
     public static void main(String[] args) {
+        
+        FlatDarkLaf.setup();
         
         LoginView meow = new LoginView();
         meow.setVisible(true);

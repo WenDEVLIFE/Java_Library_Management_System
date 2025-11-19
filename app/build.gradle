@@ -25,6 +25,7 @@ dependencies {
     implementation libs.guava
 
     implementation 'org.xerial:sqlite-jdbc:3.45.2.0'
+    implementation 'com.formdev:flatlaf:3.4'
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
