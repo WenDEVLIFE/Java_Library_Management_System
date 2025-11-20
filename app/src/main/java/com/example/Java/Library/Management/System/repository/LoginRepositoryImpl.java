@@ -4,7 +4,7 @@
  */
 package com.example.Java.Library.Management.System.repository;
 
-import com.example.Java.Library.Management.System.LoginView;
+import com.example.Java.Library.Management.System.auth.LoginView;
 import com.example.Java.Library.Management.System.services.SQliteConnection;
 
 import javax.swing.*;

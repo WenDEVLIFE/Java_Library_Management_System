@@ -2,8 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package com.example.Java.Library.Management.System;
+package com.example.Java.Library.Management.System.auth;
 
+import com.example.Java.Library.Management.System.auth.LoginView;
 import com.example.Java.Library.Management.System.repository.RegisterRepositoryImpl;
 
 /**
