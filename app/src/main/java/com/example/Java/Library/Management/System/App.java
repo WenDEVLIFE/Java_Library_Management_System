@@ -5,14 +5,21 @@ package com.example.Java.Library.Management.System;
 
 import com.example.Java.Library.Management.System.auth.LoginView;
 import com.example.Java.Library.Management.System.services.SQliteConnection;
-import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.intellijthemes.FlatArcDarkIJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatNordIJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatSolarizedDarkIJTheme;
 import java.sql.Connection;
+import javax.swing.UIManager;
 
 public class App {
     public static void main(String[] args) {
-        
-        FlatDarkLaf.setup();
-        
+   
+
+             try {
+            UIManager.setLookAndFeel(new FlatArcDarkIJTheme());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         LoginView meow = new LoginView();
         meow.setVisible(true);
         meow.setResizable(false);
