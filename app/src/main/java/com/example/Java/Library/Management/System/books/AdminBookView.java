@@ -118,15 +118,16 @@ public class AdminBookView extends javax.swing.JFrame {
                 .addGap(15, 15, 15))
         );
 
+        jTextField1.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
         jTextField1.setToolTipText("book name");
         jTextField1.addActionListener(this::jTextField1ActionPerformed);
 
         jLabel13.setBackground(new java.awt.Color(255, 255, 255));
-        jLabel13.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
+        jLabel13.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
         jLabel13.setText("Search");
 
         jLabel14.setBackground(new java.awt.Color(255, 255, 255));
-        jLabel14.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
+        jLabel14.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
         jLabel14.setText("Books");
 
         jButton6.setBackground(new java.awt.Color(0, 153, 153));
@@ -152,6 +153,7 @@ public class AdminBookView extends javax.swing.JFrame {
         jButton9.setText("Delete Book");
         jButton9.addActionListener(this::jButton9ActionPerformed);
 
+        jTable1.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -211,7 +213,7 @@ public class AdminBookView extends javax.swing.JFrame {
                         .addComponent(jLabel13)))
                 .addGap(35, 35, 35)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 365, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 39, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 47, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)

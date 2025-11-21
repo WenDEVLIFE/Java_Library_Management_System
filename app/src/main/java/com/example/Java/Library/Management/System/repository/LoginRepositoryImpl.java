@@ -5,6 +5,8 @@
 package com.example.Java.Library.Management.System.repository;
 
 import com.example.Java.Library.Management.System.auth.LoginView;
+import com.example.Java.Library.Management.System.books.UserBookView;
+import com.example.Java.Library.Management.System.dashboard.AdminDashboardView;
 import com.example.Java.Library.Management.System.services.SQliteConnection;
 
 import javax.swing.*;
@@ -38,6 +40,16 @@ public class LoginRepositoryImpl  extends  LoginRepository {
                     String role = rs.getString("role");
                     System.out.println("Login successful for user: " + credentials.get("username") + " with role: " + role);
                     JOptionPane.showMessageDialog(null, "Login Successful! Welcome, " + rs.getString("fullname"));
+                    if(role=="admin"){
+                    AdminDashboardView view = new AdminDashboardView();
+                    view.setVisible(true);
+                    login.dispose();
+                    }
+                    else if (role=="user"){
+                    UserBookView view = new UserBookView();
+                    view.setVisible(true);
+                    login.dispose();
+                    }
                 } else {
                     System.out.println("Invalid username or password for user: " +  credentials.get("username"));
                 }
