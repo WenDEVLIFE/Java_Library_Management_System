@@ -24,6 +24,10 @@ public class AdminDashboardView extends javax.swing.JFrame {
      */
     public AdminDashboardView() {
         initComponents();
+         setVisible(true);
+        setResizable(false);
+        setLocationRelativeTo(null);
+        setTitle("Library Managemetn System - Dasboard ");
   
     }
 
