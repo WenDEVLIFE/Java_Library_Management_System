@@ -8,14 +8,14 @@ package com.example.Java.Library.Management.System.books;
  *
  * @author wendevlife
  */
-public class BookView extends javax.swing.JFrame {
+public class AdminBookView extends javax.swing.JFrame {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(BookView.class.getName());
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(AdminBookView.class.getName());
 
     /**
      * Creates new form books
      */
-    public BookView() {
+    public AdminBookView() {
         initComponents();
     }
 
@@ -66,7 +66,7 @@ public class BookView extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new BookView().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> new AdminBookView().setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

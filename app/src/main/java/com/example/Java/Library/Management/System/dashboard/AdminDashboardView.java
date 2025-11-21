@@ -4,6 +4,10 @@
  */
 package com.example.Java.Library.Management.System.dashboard;
 
+import com.example.Java.Library.Management.System.auth.LoginView;
+import com.example.Java.Library.Management.System.books.AdminBookView;
+import com.example.Java.Library.Management.System.categories.AdminCategoryView;
+import com.example.Java.Library.Management.System.user.AdminUserView;
 import com.formdev.flatlaf.intellijthemes.FlatArcDarkIJTheme;
 import javax.swing.UIManager;
 import mdlaf.MaterialLookAndFeel;
@@ -64,26 +68,31 @@ public class AdminDashboardView extends javax.swing.JFrame {
         jButton3.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
         jButton3.setForeground(new java.awt.Color(255, 255, 255));
         jButton3.setText("Categories");
+        jButton3.addActionListener(this::jButton3ActionPerformed);
 
         jButton2.setBackground(new java.awt.Color(0, 153, 153));
         jButton2.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
         jButton2.setForeground(new java.awt.Color(255, 255, 255));
         jButton2.setText("Home");
+        jButton2.addActionListener(this::jButton2ActionPerformed);
 
         jButton1.setBackground(new java.awt.Color(0, 153, 153));
         jButton1.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
         jButton1.setForeground(new java.awt.Color(255, 255, 255));
         jButton1.setText("Users");
+        jButton1.addActionListener(this::jButton1ActionPerformed);
 
         jButton4.setBackground(new java.awt.Color(0, 153, 153));
         jButton4.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
         jButton4.setForeground(new java.awt.Color(255, 255, 255));
         jButton4.setText("Books");
+        jButton4.addActionListener(this::jButton4ActionPerformed);
 
         jButton5.setBackground(new java.awt.Color(0, 153, 153));
         jButton5.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
         jButton5.setForeground(new java.awt.Color(255, 255, 255));
         jButton5.setText("Logout");
+        jButton5.addActionListener(this::jButton5ActionPerformed);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -336,6 +345,44 @@ public class AdminDashboardView extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    // Home
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        AdminDashboardView dashboard = new AdminDashboardView();
+        dashboard.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    // categories
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        AdminCategoryView categoryView = new AdminCategoryView();
+        categoryView.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    // books
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        AdminBookView bookView = new AdminBookView();
+        bookView.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    // users
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        AdminUserView userView = new AdminUserView();
+        userView.setVisible(true);
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    // logout
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+      int response = javax.swing.JOptionPane.showConfirmDialog(this, "Are you sure you want to logout?", "Confirm Logout", javax.swing.JOptionPane.YES_NO_OPTION);
+        if (response == javax.swing.JOptionPane.YES_OPTION) {
+            LoginView loginView = new LoginView();
+            loginView.setVisible(true);
+            this.dispose();
+        }
+
+    }//GEN-LAST:event_jButton5ActionPerformed
 
     /**
      * @param args the command line arguments
