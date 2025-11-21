@@ -22,6 +22,10 @@ public class AdminUserView extends javax.swing.JFrame {
      */
     public AdminUserView() {
         initComponents();
+          setVisible(true);
+        setResizable(false);
+        setLocationRelativeTo(null);
+        setTitle("Library Managemetn System - User Management ");
     }
 
     /**

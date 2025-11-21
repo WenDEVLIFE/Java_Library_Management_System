@@ -27,37 +27,43 @@ abstract class LoginRepository {
 public class LoginRepositoryImpl  extends  LoginRepository {
     @Override
     public void loginUser(Map<String, Object> credentials, LoginView login) {
-
         String sql = "SELECT * FROM user WHERE username = ? AND password = ?";
 
-        // login function here
         try (Connection conn = SQliteConnection.connect();
              PreparedStatement ps = conn.prepareStatement(sql)) {
+
             ps.setString(1, (String) credentials.get("username"));
             ps.setString(2, (String) credentials.get("password"));
+
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     String role = rs.getString("role");
                     System.out.println("Login successful for user: " + credentials.get("username") + " with role: " + role);
                     JOptionPane.showMessageDialog(null, "Login Successful! Welcome, " + rs.getString("fullname"));
-                    if(role=="admin"){
-                    AdminDashboardView view = new AdminDashboardView();
-                    view.setVisible(true);
-                    login.dispose();
-                    }
-                    else if (role=="user"){
-                    UserBookView view = new UserBookView();
-                    view.setVisible(true);
-                    login.dispose();
+
+                    // safe null check and content comparison
+                    if ("admin".equalsIgnoreCase(role)) {
+                        SwingUtilities.invokeLater(() -> {
+                            AdminDashboardView view = new AdminDashboardView();
+                            view.setVisible(true);
+                            login.dispose();
+                        });
+                    } else if ("user".equalsIgnoreCase(role)) {
+                        SwingUtilities.invokeLater(() -> {
+                            UserBookView view = new UserBookView();
+                            view.setVisible(true);
+                            login.dispose();
+                        });
+                    } else {
+                        System.out.println("Unknown role: " + role);
                     }
                 } else {
-                    System.out.println("Invalid username or password for user: " +  credentials.get("username"));
+                    System.out.println("Invalid username or password for user: " + credentials.get("username"));
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to login user", e);
         }
-
     }
     
 }

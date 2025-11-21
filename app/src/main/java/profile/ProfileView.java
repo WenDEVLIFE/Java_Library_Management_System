@@ -20,6 +20,10 @@ public class ProfileView extends javax.swing.JFrame {
      */
     public ProfileView() {
         initComponents();
+        setVisible(true);
+        setResizable(false);
+        setLocationRelativeTo(null);
+        setTitle("Library Managemetn System - Books ");
     }
 
     /**
@@ -113,7 +117,8 @@ public class ProfileView extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-
+        ProfileView profile = new ProfileView();
+        profile.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jButton2ActionPerformed
 

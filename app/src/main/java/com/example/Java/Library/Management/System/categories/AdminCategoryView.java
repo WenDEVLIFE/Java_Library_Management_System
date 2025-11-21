@@ -22,6 +22,10 @@ public class AdminCategoryView extends javax.swing.JFrame {
      */
     public AdminCategoryView() {
         initComponents();
+          setVisible(true);
+        setResizable(false);
+        setLocationRelativeTo(null);
+        setTitle("Library Managemetn System - Categories ");
     }
 
     /**
@@ -49,7 +53,7 @@ public class AdminCategoryView extends javax.swing.JFrame {
         jLabel14 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(1183, 648));
+        setPreferredSize(new java.awt.Dimension(1183, 742));
 
         jPanel1.setBackground(new java.awt.Color(0, 153, 153));
 

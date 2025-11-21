@@ -54,7 +54,7 @@ public class AdminBookView extends javax.swing.JFrame {
         jTable1 = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(1183, 648));
+        setPreferredSize(new java.awt.Dimension(1183, 742));
 
         jPanel1.setBackground(new java.awt.Color(0, 153, 153));
 

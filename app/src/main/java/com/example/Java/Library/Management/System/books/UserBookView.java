@@ -5,6 +5,9 @@
 package com.example.Java.Library.Management.System.books;
 
 import com.example.Java.Library.Management.System.auth.LoginView;
+import com.formdev.flatlaf.intellijthemes.FlatArcDarkIJTheme;
+import javax.swing.UIManager;
+import profile.ProfileView;
 
 /**
  *
@@ -19,6 +22,10 @@ public class UserBookView extends javax.swing.JFrame {
      */
     public UserBookView() {
         initComponents();
+             setVisible(true);
+        setResizable(false);
+        setLocationRelativeTo(null);
+        setTitle("Library Managemetn System - Books ");
     }
 
     /**
@@ -187,7 +194,8 @@ public class UserBookView extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-     
+        ProfileView profile = new ProfileView();
+        profile.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jButton2ActionPerformed
 
@@ -235,8 +243,15 @@ public class UserBookView extends javax.swing.JFrame {
         }
         //</editor-fold>
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new UserBookView().setVisible(true));
+         try {
+            UIManager.setLookAndFeel(new FlatArcDarkIJTheme());
+              /* Create and display the form */
+        java.awt.EventQueue.invokeLater(() -> new UserBookView().setVisible(true)
+        );
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+      
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
