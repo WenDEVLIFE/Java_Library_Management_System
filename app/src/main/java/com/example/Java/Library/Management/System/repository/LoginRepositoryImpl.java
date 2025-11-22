@@ -8,6 +8,8 @@ import com.example.Java.Library.Management.System.auth.LoginView;
 import com.example.Java.Library.Management.System.books.UserBookView;
 import com.example.Java.Library.Management.System.dashboard.AdminDashboardView;
 import com.example.Java.Library.Management.System.services.SQliteConnection;
+import com.example.Java.Library.Management.System.services.UserSession;
+import com.example.Java.Library.Management.System.model.UserModel;
 
 import javax.swing.*;
 import java.sql.Connection;
@@ -38,8 +40,16 @@ public class LoginRepositoryImpl  extends  LoginRepository {
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     String role = rs.getString("role");
+                    String userId = rs.getString("id");
+                    String fullname = rs.getString("fullname");
+                    String username = rs.getString("username");
+                    
+                    // Set current user in session
+                    UserModel currentUser = new UserModel(userId, fullname, username, role);
+                    UserSession.getInstance().setCurrentUser(currentUser);
+                    
                     System.out.println("Login successful for user: " + credentials.get("username") + " with role: " + role);
-                    JOptionPane.showMessageDialog(null, "Login Successful! Welcome, " + rs.getString("fullname"));
+                    JOptionPane.showMessageDialog(null, "Login Successful! Welcome, " + fullname);
 
                     // safe null check and content comparison
                     if ("admin".equalsIgnoreCase(role)) {

@@ -16,6 +16,10 @@ import com.example.Java.Library.Management.System.repository.CategoryImpl;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
+import java.awt.Desktop;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -179,6 +183,7 @@ public class AdminBookView extends javax.swing.JFrame {
         jButton7.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
         jButton7.setForeground(new java.awt.Color(255, 255, 255));
         jButton7.setText("Open Book");
+        jButton7.addActionListener(this::jButton7ActionPerformed);
 
         jButton8.setBackground(new java.awt.Color(0, 153, 153));
         jButton8.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
@@ -301,6 +306,51 @@ public class AdminBookView extends javax.swing.JFrame {
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField1ActionPerformed
+
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+        // Open Book - View PDF
+        int row = jTable1.getSelectedRow();
+        if (row < 0) {
+            JOptionPane.showMessageDialog(this, "Select a book to open.", "No selection", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        Integer bookId = (Integer) jTable1.getValueAt(row, 0);
+        BookModel book = bookRepo.findById(bookId);
+        if (book == null) {
+            JOptionPane.showMessageDialog(this, "Book not found.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        if (book.getFileData() == null || book.getFileData().length == 0) {
+            JOptionPane.showMessageDialog(this, "No PDF file available for this book.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        try {
+            // Create a temporary file to store the PDF
+            File tempFile = File.createTempFile("book_" + book.getId() + "_", ".pdf");
+            tempFile.deleteOnExit();
+            
+            // Write the PDF data to the temporary file
+            try (FileOutputStream fos = new FileOutputStream(tempFile)) {
+                fos.write(book.getFileData());
+            }
+            
+            // Open the PDF with the default system viewer
+            if (Desktop.isDesktopSupported()) {
+                Desktop desktop = Desktop.getDesktop();
+                if (desktop.isSupported(Desktop.Action.OPEN)) {
+                    desktop.open(tempFile);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Cannot open PDF. No default application found.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Desktop operations not supported on this system.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this, "Error opening PDF: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
         // Add Book: pick PDF and enter metadata

@@ -6,6 +6,14 @@ package profile;
 
 import com.example.Java.Library.Management.System.auth.LoginView;
 import com.example.Java.Library.Management.System.books.UserBookView;
+import com.example.Java.Library.Management.System.services.UserSession;
+import com.example.Java.Library.Management.System.model.UserModel;
+import com.example.Java.Library.Management.System.services.SQliteConnection;
+
+import javax.swing.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 /**
  *
@@ -23,7 +31,22 @@ public class ProfileView extends javax.swing.JFrame {
         setVisible(true);
         setResizable(false);
         setLocationRelativeTo(null);
-        setTitle("Library Managemetn System - Books ");
+        setTitle("Library Management System - Profile ");
+        loadUserProfile();
+    }
+    
+    private void loadUserProfile() {
+        UserModel currentUser = UserSession.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            usernameLabel.setText(currentUser.getUsername());
+            fullnameLabel.setText(currentUser.getFullname());
+            roleLabel.setText(currentUser.getRole().toUpperCase());
+        } else {
+            JOptionPane.showMessageDialog(this, "No user logged in. Redirecting to login.", "Error", JOptionPane.ERROR_MESSAGE);
+            LoginView loginView = new LoginView();
+            loginView.setVisible(true);
+            this.dispose();
+        }
     }
 
     /**
@@ -39,6 +62,15 @@ public class ProfileView extends javax.swing.JFrame {
         jButton2 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
+        javax.swing.JPanel profilePanel = new javax.swing.JPanel();
+        javax.swing.JLabel titleLabel = new javax.swing.JLabel();
+        javax.swing.JLabel usernameTextLabel = new javax.swing.JLabel();
+        usernameLabel = new javax.swing.JLabel();
+        javax.swing.JLabel fullnameTextLabel = new javax.swing.JLabel();
+        fullnameLabel = new javax.swing.JLabel();
+        javax.swing.JLabel roleTextLabel = new javax.swing.JLabel();
+        roleLabel = new javax.swing.JLabel();
+        changePasswordBtn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -98,6 +130,85 @@ public class ProfileView extends javax.swing.JFrame {
                 .addGap(15, 15, 15))
         );
 
+        profilePanel.setBackground(new java.awt.Color(255, 255, 255));
+        profilePanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 153, 153), 2));
+
+        titleLabel.setFont(new java.awt.Font("Liberation Sans", 1, 36)); // NOI18N
+        titleLabel.setForeground(new java.awt.Color(0, 153, 153));
+        titleLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        titleLabel.setText("User Profile");
+
+        usernameTextLabel.setFont(new java.awt.Font("Liberation Sans", 1, 20)); // NOI18N
+        usernameTextLabel.setText("Username:");
+
+        usernameLabel.setFont(new java.awt.Font("Liberation Sans", 0, 20)); // NOI18N
+        usernameLabel.setText("-");
+
+        fullnameTextLabel.setFont(new java.awt.Font("Liberation Sans", 1, 20)); // NOI18N
+        fullnameTextLabel.setText("Full Name:");
+
+        fullnameLabel.setFont(new java.awt.Font("Liberation Sans", 0, 20)); // NOI18N
+        fullnameLabel.setText("-");
+
+        roleTextLabel.setFont(new java.awt.Font("Liberation Sans", 1, 20)); // NOI18N
+        roleTextLabel.setText("Role:");
+
+        roleLabel.setFont(new java.awt.Font("Liberation Sans", 0, 20)); // NOI18N
+        roleLabel.setText("-");
+
+        changePasswordBtn.setBackground(new java.awt.Color(0, 153, 153));
+        changePasswordBtn.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
+        changePasswordBtn.setForeground(new java.awt.Color(255, 255, 255));
+        changePasswordBtn.setText("Change Password");
+        changePasswordBtn.addActionListener(this::changePasswordBtnActionPerformed);
+
+        javax.swing.GroupLayout profilePanelLayout = new javax.swing.GroupLayout(profilePanel);
+        profilePanel.setLayout(profilePanelLayout);
+        profilePanelLayout.setHorizontalGroup(
+            profilePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(profilePanelLayout.createSequentialGroup()
+                .addGap(50, 50, 50)
+                .addGroup(profilePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(usernameTextLabel)
+                    .addComponent(fullnameTextLabel)
+                    .addComponent(roleTextLabel))
+                .addGap(30, 30, 30)
+                .addGroup(profilePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(usernameLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
+                    .addComponent(fullnameLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(roleLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, profilePanelLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(titleLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(300, 300, 300))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, profilePanelLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(changePasswordBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(380, 380, 380))
+        );
+        profilePanelLayout.setVerticalGroup(
+            profilePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(profilePanelLayout.createSequentialGroup()
+                .addGap(30, 30, 30)
+                .addComponent(titleLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(50, 50, 50)
+                .addGroup(profilePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(usernameTextLabel)
+                    .addComponent(usernameLabel))
+                .addGap(30, 30, 30)
+                .addGroup(profilePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(fullnameTextLabel)
+                    .addComponent(fullnameLabel))
+                .addGap(30, 30, 30)
+                .addGroup(profilePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(roleTextLabel)
+                    .addComponent(roleLabel))
+                .addGap(60, 60, 60)
+                .addComponent(changePasswordBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -105,11 +216,17 @@ public class ProfileView extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(30, 30, 30)
+                .addComponent(profilePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(30, 30, 30))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(0, 602, Short.MAX_VALUE)
+                .addGap(30, 30, 30)
+                .addComponent(profilePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(30, 30, 30)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
@@ -131,11 +248,101 @@ public class ProfileView extends javax.swing.JFrame {
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         int response = javax.swing.JOptionPane.showConfirmDialog(this, "Are you sure you want to logout?", "Confirm Logout", javax.swing.JOptionPane.YES_NO_OPTION);
         if (response == javax.swing.JOptionPane.YES_OPTION) {
+            UserSession.getInstance().clearSession();
             LoginView loginView = new LoginView();
             loginView.setVisible(true);
             this.dispose();
         }
     }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void changePasswordBtnActionPerformed(java.awt.event.ActionEvent evt) {
+        UserModel currentUser = UserSession.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            JOptionPane.showMessageDialog(this, "No user logged in.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        JPasswordField currentPasswordField = new JPasswordField();
+        JPasswordField newPasswordField = new JPasswordField();
+        JPasswordField confirmPasswordField = new JPasswordField();
+
+        JPanel panel = new JPanel(new java.awt.GridLayout(0, 1, 5, 5));
+        panel.add(new JLabel("Current Password:"));
+        panel.add(currentPasswordField);
+        panel.add(new JLabel("New Password:"));
+        panel.add(newPasswordField);
+        panel.add(new JLabel("Confirm New Password:"));
+        panel.add(confirmPasswordField);
+
+        int result = JOptionPane.showConfirmDialog(
+                this,
+                panel,
+                "Change Password",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (result != JOptionPane.OK_OPTION) {
+            return;
+        }
+
+        String currentPassword = new String(currentPasswordField.getPassword()).trim();
+        String newPassword = new String(newPasswordField.getPassword()).trim();
+        String confirmPassword = new String(confirmPasswordField.getPassword()).trim();
+
+        if (currentPassword.isEmpty() || newPassword.isEmpty() || confirmPassword.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "All fields are required.", "Validation Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        if (!newPassword.equals(confirmPassword)) {
+            JOptionPane.showMessageDialog(this, "New passwords do not match.", "Validation Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        if (newPassword.length() < 6) {
+            JOptionPane.showMessageDialog(this, "New password must be at least 6 characters long.", "Validation Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Verify current password and update
+        String sql = "SELECT password FROM user WHERE id = ?";
+        try (Connection conn = SQliteConnection.connect();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, currentUser.getId());
+            try (java.sql.ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    String storedPassword = rs.getString("password");
+                    if (!storedPassword.equals(currentPassword)) {
+                        JOptionPane.showMessageDialog(this, "Current password is incorrect.", "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(this, "User not found.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error verifying password: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Update password
+        String updateSql = "UPDATE user SET password = ? WHERE id = ?";
+        try (Connection conn = SQliteConnection.connect();
+             PreparedStatement ps = conn.prepareStatement(updateSql)) {
+            ps.setString(1, newPassword);
+            ps.setString(2, currentUser.getId());
+            int rows = ps.executeUpdate();
+            if (rows > 0) {
+                JOptionPane.showMessageDialog(this, "Password changed successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Failed to change password.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error updating password: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
     /**
      * @param args the command line arguments
@@ -167,5 +374,9 @@ public class ProfileView extends javax.swing.JFrame {
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JLabel usernameLabel;
+    private javax.swing.JLabel fullnameLabel;
+    private javax.swing.JLabel roleLabel;
+    private javax.swing.JButton changePasswordBtn;
     // End of variables declaration//GEN-END:variables
 }

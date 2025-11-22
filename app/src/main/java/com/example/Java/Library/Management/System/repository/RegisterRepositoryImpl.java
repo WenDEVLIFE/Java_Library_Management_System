@@ -102,17 +102,26 @@ public class RegisterRepositoryImpl extends RegisterRepository {
     @Override
     public List<UserModel> getUsers() {
         List<UserModel> users = new ArrayList<>();
-        String sql = "SELECT id, fullname, username FROM user";
+        String sql = "SELECT id, fullname, username, role FROM user";
         try (Connection conn = SQliteConnection.connect();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                UserModel user = new UserModel(
-                        rs.getString("id"),
-                        rs.getString("fullname"),
-                        rs.getString("username"),
-                        rs.getString("role")
-                );
+                String id = rs.getString("id");
+                String fullname = rs.getString("fullname");
+                String username = rs.getString("username");
+                String role = rs.getString("role"); // may be null
+
+                // Debug output to verify what comes from DB
+                System.out.println("getUsers row -> id=" + id + " username=" + username + " fullname=" + fullname + " role=" + role);
+
+                if (role == null) {
+                    role = ""; // or a default like "user"
+                }
+
+                // IMPORTANT: ensure this matches your UserModel constructor parameter order.
+                // If UserModel expects (id, username, fullname, role) swap fullname and username below.
+                UserModel user = new UserModel(id, fullname, username, role);
                 users.add(user);
             }
         } catch (SQLException e) {
