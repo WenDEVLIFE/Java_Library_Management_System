@@ -7,6 +7,7 @@ package com.example.Java.Library.Management.System.dashboard;
 import com.example.Java.Library.Management.System.auth.LoginView;
 import com.example.Java.Library.Management.System.books.AdminBookView;
 import com.example.Java.Library.Management.System.categories.AdminCategoryView;
+import com.example.Java.Library.Management.System.repository.DashboardRepositoryImpl;
 import com.example.Java.Library.Management.System.user.AdminUserView;
 import com.formdev.flatlaf.intellijthemes.FlatArcDarkIJTheme;
 import javax.swing.UIManager;
@@ -17,6 +18,11 @@ import mdlaf.MaterialLookAndFeel;
  * @author wendevlife
  */
 public class AdminDashboardView extends javax.swing.JFrame {
+    int userCountNumber;
+    int adminCountNumber;
+    int bookCountNumber;
+    int categoryCountNumber;
+    DashboardRepositoryImpl dashboardRepository = new DashboardRepositoryImpl();
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(AdminDashboardView.class.getName());
 
     /**
@@ -28,6 +34,17 @@ public class AdminDashboardView extends javax.swing.JFrame {
         setResizable(false);
         setLocationRelativeTo(null);
         setTitle("Library Managemetn System - Dasboard ");
+
+        // Fetch counts from the database
+        userCountNumber = dashboardRepository.getUserRoleCount();
+        adminCountNumber = dashboardRepository.getAdminRoleCount();
+        bookCountNumber = dashboardRepository.getTotalBooksCount();
+        categoryCountNumber = dashboardRepository.getCategoriesCount();
+
+        userCount.setText(String.valueOf(userCountNumber));
+        adminCount.setText(String.valueOf(adminCountNumber));
+        bookCount.setText(String.valueOf(bookCountNumber));
+        categoryCount.setText(String.valueOf(categoryCountNumber));
   
     }
 
@@ -48,19 +65,19 @@ public class AdminDashboardView extends javax.swing.JFrame {
         jButton5 = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        bookCount = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
+        userCount = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
+        categoryCount = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
         jPanel5 = new javax.swing.JPanel();
         jLabel7 = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
+        adminCount = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
         jLabel13 = new javax.swing.JLabel();
 
@@ -134,10 +151,10 @@ public class AdminDashboardView extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
         jLabel1.setText("Books");
 
-        jLabel2.setBackground(new java.awt.Color(255, 255, 255));
-        jLabel2.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
-        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel2.setText("0");
+        bookCount.setBackground(new java.awt.Color(255, 255, 255));
+        bookCount.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
+        bookCount.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        bookCount.setText("0");
 
         jLabel9.setBackground(new java.awt.Color(255, 255, 255));
         jLabel9.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
@@ -154,7 +171,7 @@ public class AdminDashboardView extends javax.swing.JFrame {
                         .addComponent(jLabel1))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(139, 139, 139)
-                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(bookCount, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
@@ -169,7 +186,7 @@ public class AdminDashboardView extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel1)
                 .addGap(33, 33, 33)
-                .addComponent(jLabel2)
+                .addComponent(bookCount)
                 .addContainerGap(18, Short.MAX_VALUE))
         );
 
@@ -179,10 +196,10 @@ public class AdminDashboardView extends javax.swing.JFrame {
         jLabel3.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
         jLabel3.setText("User");
 
-        jLabel4.setBackground(new java.awt.Color(255, 255, 255));
-        jLabel4.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
-        jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel4.setText("0");
+        userCount.setBackground(new java.awt.Color(255, 255, 255));
+        userCount.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
+        userCount.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        userCount.setText("0");
 
         jLabel11.setBackground(new java.awt.Color(255, 255, 255));
         jLabel11.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
@@ -202,7 +219,7 @@ public class AdminDashboardView extends javax.swing.JFrame {
                 .addGap(169, 169, 169))
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGap(133, 133, 133)
-                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(userCount, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(137, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
@@ -213,7 +230,7 @@ public class AdminDashboardView extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(jLabel3)
                 .addGap(18, 18, 18)
-                .addComponent(jLabel4)
+                .addComponent(userCount)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -223,10 +240,10 @@ public class AdminDashboardView extends javax.swing.JFrame {
         jLabel5.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
         jLabel5.setText("Categories");
 
-        jLabel6.setBackground(new java.awt.Color(255, 255, 255));
-        jLabel6.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
-        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel6.setText("0");
+        categoryCount.setBackground(new java.awt.Color(255, 255, 255));
+        categoryCount.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
+        categoryCount.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        categoryCount.setText("0");
 
         jLabel10.setBackground(new java.awt.Color(255, 255, 255));
         jLabel10.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
@@ -241,7 +258,7 @@ public class AdminDashboardView extends javax.swing.JFrame {
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addGap(153, 153, 153)
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(categoryCount, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel5)))
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addGap(198, 198, 198)
@@ -256,7 +273,7 @@ public class AdminDashboardView extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel5)
                 .addGap(38, 38, 38)
-                .addComponent(jLabel6)
+                .addComponent(categoryCount)
                 .addGap(24, 24, 24))
         );
 
@@ -266,10 +283,10 @@ public class AdminDashboardView extends javax.swing.JFrame {
         jLabel7.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
         jLabel7.setText("Admin");
 
-        jLabel8.setBackground(new java.awt.Color(255, 255, 255));
-        jLabel8.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
-        jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel8.setText("0");
+        adminCount.setBackground(new java.awt.Color(255, 255, 255));
+        adminCount.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
+        adminCount.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        adminCount.setText("0");
 
         jLabel12.setBackground(new java.awt.Color(255, 255, 255));
         jLabel12.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
@@ -286,7 +303,7 @@ public class AdminDashboardView extends javax.swing.JFrame {
                         .addComponent(jLabel12))
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addGap(153, 153, 153)
-                        .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(adminCount, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addGap(165, 165, 165)
                         .addComponent(jLabel7)))
@@ -300,7 +317,7 @@ public class AdminDashboardView extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel7)
                 .addGap(29, 29, 29)
-                .addComponent(jLabel8)
+                .addComponent(adminCount)
                 .addContainerGap(26, Short.MAX_VALUE))
         );
 
@@ -419,6 +436,9 @@ public class AdminDashboardView extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel adminCount;
+    private javax.swing.JLabel bookCount;
+    private javax.swing.JLabel categoryCount;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
@@ -429,18 +449,15 @@ public class AdminDashboardView extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
+    private javax.swing.JLabel userCount;
     // End of variables declaration//GEN-END:variables
 }
