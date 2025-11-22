@@ -315,6 +315,12 @@ public class AdminCategoryView extends javax.swing.JFrame {
             return;
         }
 
+        boolean isExist = category.isCategoryExist(categoryName);
+        if (isExist) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Category already exists.", "Input Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         boolean isCategory = category.AddCategory(categoryName);
 
         if (isCategory) {
