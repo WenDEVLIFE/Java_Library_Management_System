@@ -8,6 +8,18 @@ import com.example.Java.Library.Management.System.auth.LoginView;
 import com.example.Java.Library.Management.System.categories.AdminCategoryView;
 import com.example.Java.Library.Management.System.dashboard.AdminDashboardView;
 import com.example.Java.Library.Management.System.user.AdminUserView;
+import com.example.Java.Library.Management.System.model.BookModel;
+import com.example.Java.Library.Management.System.repository.BookRepositoryImpl;
+import com.example.Java.Library.Management.System.model.CategoryModel;
+import com.example.Java.Library.Management.System.repository.CategoryImpl;
+
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableModel;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.UUID;
 
 /**
  *
@@ -16,6 +28,8 @@ import com.example.Java.Library.Management.System.user.AdminUserView;
 public class AdminBookView extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(AdminBookView.class.getName());
+    private final BookRepositoryImpl bookRepo = new BookRepositoryImpl();
+    private final CategoryImpl categoryRepo = new CategoryImpl();
 
     /**
      * Creates new form AdminBookView
@@ -26,6 +40,31 @@ public class AdminBookView extends javax.swing.JFrame {
         setResizable(false);
         setLocationRelativeTo(null);
         setTitle("Library Managemetn System - Books ");
+        loadBooksTable();
+    }
+
+    private void loadBooksTable() {
+        List<BookModel> books = bookRepo.findAll();
+        DefaultTableModel model = new DefaultTableModel(new Object[]{"ID", "Book Name", "ISBN", "Category"}, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) { return false; }
+        };
+        for (BookModel b : books) {
+            String categoryName = getCategoryNameById(b.getCategoryId());
+            model.addRow(new Object[]{b.getId(), b.getTitle(), b.getIsbn(), categoryName});
+        }
+        jTable1.setModel(model);
+    }
+    
+    private String getCategoryNameById(Integer categoryId) {
+        if (categoryId == null) return "N/A";
+        List<CategoryModel> categories = categoryRepo.GetAllCategories();
+        for (CategoryModel cat : categories) {
+            if (cat.getCategoryId().equals(String.valueOf(categoryId))) {
+                return cat.getCategoryName();
+            }
+        }
+        return "Unknown";
     }
 
     /**
@@ -264,15 +303,221 @@ public class AdminBookView extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField1ActionPerformed
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        // TODO add your handling code here:
+        // Add Book: pick PDF and enter metadata
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileFilter(new FileNameExtensionFilter("PDF Documents", "pdf"));
+        int result = chooser.showOpenDialog(this);
+        if (result != JFileChooser.APPROVE_OPTION) {
+            return;
+        }
+        Path path = chooser.getSelectedFile().toPath();
+        String filename = path.getFileName().toString().toLowerCase();
+        if (!filename.endsWith(".pdf")) {
+            JOptionPane.showMessageDialog(this, "Only PDF files are allowed.", "Invalid file", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        try {
+            String mime = Files.probeContentType(path);
+            if (mime == null || !mime.equalsIgnoreCase("application/pdf")) {
+                JOptionPane.showMessageDialog(this, "Selected file is not a PDF.", "Invalid file", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            byte[] data = Files.readAllBytes(path);
+            long size = Files.size(path);
+
+            String title = JOptionPane.showInputDialog(this, "Title:");
+            if (title == null || title.trim().isEmpty()) { 
+                JOptionPane.showMessageDialog(this, "Title is required.", "Error", JOptionPane.ERROR_MESSAGE);
+                return; 
+            }
+            String isbn = JOptionPane.showInputDialog(this, "ISBN:");
+            if (isbn == null) isbn = "";
+            String description = JOptionPane.showInputDialog(this, "Description:");
+            if (description == null) description = "";
+            
+            // Category dropdown
+            List<CategoryModel> categories = categoryRepo.GetAllCategories();
+            if (categories.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "No categories available. Please add a category first.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            String[] categoryNames = categories.stream().map(CategoryModel::getCategoryName).toArray(String[]::new);
+            String selectedCategory = (String) JOptionPane.showInputDialog(
+                this,
+                "Select Category:",
+                "Category",
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                categoryNames,
+                categoryNames[0]
+            );
+            if (selectedCategory == null) {
+                return;
+            }
+            
+            // Get category ID
+            Integer categoryId = null;
+            for (CategoryModel cat : categories) {
+                if (cat.getCategoryName().equals(selectedCategory)) {
+                    categoryId = Integer.parseInt(cat.getCategoryId());
+                    break;
+                }
+            }
+
+            BookModel book = new BookModel(
+                    null,
+                    title.trim(),
+                    isbn.trim(),
+                    categoryId,
+                    filename,
+                    "application/pdf",
+                    size,
+                    data,
+                    description.trim(),
+                    null,
+                    null
+            );
+            boolean ok = bookRepo.insert(book);
+            if (!ok) {
+                JOptionPane.showMessageDialog(this, "Failed to add book. Make sure all required fields are filled.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            JOptionPane.showMessageDialog(this, "Book added successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+            loadBooksTable();
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Error adding book: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        // TODO add your handling code here:
+        // Edit Book metadata; optionally replace PDF
+        int row = jTable1.getSelectedRow();
+        if (row < 0) {
+            JOptionPane.showMessageDialog(this, "Select a book to edit.", "No selection", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        Integer bookId = (Integer) jTable1.getValueAt(row, 0);
+        BookModel existing = bookRepo.findById(bookId);
+        if (existing == null) {
+            JOptionPane.showMessageDialog(this, "Book not found.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String title = JOptionPane.showInputDialog(this, "Title:", existing.getTitle());
+        if (title == null || title.trim().isEmpty()) { 
+            JOptionPane.showMessageDialog(this, "Title is required.", "Error", JOptionPane.ERROR_MESSAGE);
+            return; 
+        }
+        String isbn = JOptionPane.showInputDialog(this, "ISBN:", existing.getIsbn());
+        if (isbn == null) isbn = "";
+        String description = JOptionPane.showInputDialog(this, "Description:", existing.getDescription());
+        if (description == null) description = "";
+        
+        // Category dropdown
+        List<CategoryModel> categories = categoryRepo.GetAllCategories();
+        if (categories.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "No categories available. Please add a category first.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        String[] categoryNames = categories.stream().map(CategoryModel::getCategoryName).toArray(String[]::new);
+        String currentCategory = getCategoryNameById(existing.getCategoryId());
+        String selectedCategory = (String) JOptionPane.showInputDialog(
+            this,
+            "Select Category:",
+            "Category",
+            JOptionPane.QUESTION_MESSAGE,
+            null,
+            categoryNames,
+            currentCategory
+        );
+        if (selectedCategory == null) {
+            return;
+        }
+        
+        // Get category ID
+        Integer categoryId = null;
+        for (CategoryModel cat : categories) {
+            if (cat.getCategoryName().equals(selectedCategory)) {
+                categoryId = Integer.parseInt(cat.getCategoryId());
+                break;
+            }
+        }
+
+        int changePdf = JOptionPane.showConfirmDialog(this, "Change PDF file?", "PDF", JOptionPane.YES_NO_OPTION);
+        byte[] fileData = null;
+        Long fileSize = null;
+        String filename = existing.getFilename();
+        String mimeType = existing.getMimeType();
+
+        if (changePdf == JOptionPane.YES_OPTION) {
+            JFileChooser chooser = new JFileChooser();
+            chooser.setFileFilter(new FileNameExtensionFilter("PDF Documents", "pdf"));
+            int result = chooser.showOpenDialog(this);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                Path path = chooser.getSelectedFile().toPath();
+                String fname = path.getFileName().toString().toLowerCase();
+                if (!fname.endsWith(".pdf")) {
+                    JOptionPane.showMessageDialog(this, "Only PDF files are allowed.", "Invalid file", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                try {
+                    String mime = Files.probeContentType(path);
+                    if (mime == null || !mime.equalsIgnoreCase("application/pdf")) {
+                        JOptionPane.showMessageDialog(this, "Selected file is not a PDF.", "Invalid file", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    fileData = Files.readAllBytes(path);
+                    fileSize = Files.size(path);
+                    filename = chooser.getSelectedFile().getName();
+                    mimeType = "application/pdf";
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(this, "Error reading PDF: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
+        }
+
+        BookModel updated = new BookModel(
+                bookId,
+                title.trim(),
+                isbn.trim(),
+                categoryId,
+                filename,
+                mimeType,
+                fileSize,
+                fileData,
+                description.trim(),
+                existing.getCreatedAt(),
+                existing.getUpdatedAt()
+        );
+        boolean ok = bookRepo.update(updated);
+        if (!ok) {
+            JOptionPane.showMessageDialog(this, "Failed to update book.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        JOptionPane.showMessageDialog(this, "Book updated successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+        loadBooksTable();
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
-        // TODO add your handling code here:
+        // Delete Book
+        int row = jTable1.getSelectedRow();
+        if (row < 0) {
+            JOptionPane.showMessageDialog(this, "Select a book to delete.", "No selection", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        Integer bookId = (Integer) jTable1.getValueAt(row, 0);
+        int confirm = JOptionPane.showConfirmDialog(this, "Delete selected book?", "Confirm", JOptionPane.YES_NO_OPTION);
+        if (confirm != JOptionPane.YES_OPTION) {
+            return;
+        }
+        boolean ok = bookRepo.deleteById(bookId);
+        if (!ok) {
+            JOptionPane.showMessageDialog(this, "Failed to delete book.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        JOptionPane.showMessageDialog(this, "Book deleted.", "Success", JOptionPane.INFORMATION_MESSAGE);
+        loadBooksTable();
     }//GEN-LAST:event_jButton9ActionPerformed
 
     /**

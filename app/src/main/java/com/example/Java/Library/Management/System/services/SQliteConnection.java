@@ -75,6 +75,29 @@ public class SQliteConnection {
                         "created_at DATETIME DEFAULT CURRENT_TIMESTAMP" +
                         ")";
                 stmt.executeUpdate(userTableSql);
+                
+                String categoryTableSql = "CREATE TABLE IF NOT EXISTS category (" +
+                        "categoryId INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        "category_name TEXT NOT NULL UNIQUE, " +
+                        "created_at DATETIME DEFAULT CURRENT_TIMESTAMP" +
+                        ")";
+                stmt.executeUpdate(categoryTableSql);
+                
+                String booksTableSql = "CREATE TABLE IF NOT EXISTS books (" +
+                        "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        "title TEXT(255) NOT NULL, " +
+                        "isbn TEXT(255), " +
+                        "categoryId INTEGER, " +
+                        "filename TEXT, " +
+                        "mime_type TEXT, " +
+                        "file_size INTEGER, " +
+                        "file_bob BLOB, " +
+                        "description TEXT, " +
+                        "created_at TEXT DEFAULT CURRENT_TIMESTAMP, " +
+                        "updated_At TEXT DEFAULT CURRENT_TIMESTAMP, " +
+                        "FOREIGN KEY (categoryId) REFERENCES category(categoryId)" +
+                        ")";
+                stmt.executeUpdate(booksTableSql);
             }
             schemaInitialized = true;
         }
