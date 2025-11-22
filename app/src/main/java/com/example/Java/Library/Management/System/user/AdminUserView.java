@@ -8,13 +8,22 @@ import com.example.Java.Library.Management.System.auth.LoginView;
 import com.example.Java.Library.Management.System.books.AdminBookView;
 import com.example.Java.Library.Management.System.categories.AdminCategoryView;
 import com.example.Java.Library.Management.System.dashboard.AdminDashboardView;
+import com.example.Java.Library.Management.System.model.UserModel;
+import com.example.Java.Library.Management.System.repository.RegisterRepositoryImpl;
+import com.example.Java.Library.Management.System.services.SQliteConnection;
+
+import javax.swing.table.DefaultTableModel;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author wendevlife
  */
 public class AdminUserView extends javax.swing.JFrame {
-    
+    List<UserModel > users = new ArrayList<>();
+    DefaultTableModel tableModel;
+    RegisterRepositoryImpl registerRepo = new RegisterRepositoryImpl();
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(AdminUserView.class.getName());
 
     /**
@@ -26,6 +35,13 @@ public class AdminUserView extends javax.swing.JFrame {
         setResizable(false);
         setLocationRelativeTo(null);
         setTitle("Library Managemetn System - User Management ");
+
+        // set the tables
+        String [] columnNames = {"ID", "Username", "Full Name"};
+        tableModel = new DefaultTableModel(columnNames, 0);
+        jTable1.setModel(tableModel);
+        loadTables();
+
     }
 
     /**
@@ -253,17 +269,93 @@ public class AdminUserView extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField1ActionPerformed
 
+    // add user
+    // Java
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        // TODO add your handling code here:
+        javax.swing.JTextField usernameField = new javax.swing.JTextField();
+        javax.swing.JTextField fullnameField = new javax.swing.JTextField();
+        javax.swing.JPasswordField passwordField = new javax.swing.JPasswordField();
+        javax.swing.JPasswordField confirmField = new javax.swing.JPasswordField();
+
+        javax.swing.JPanel panel = new javax.swing.JPanel(new java.awt.GridLayout(0, 1, 5, 5));
+        panel.add(new javax.swing.JLabel("Username:"));
+        panel.add(usernameField);
+        panel.add(new javax.swing.JLabel("Full name:"));
+        panel.add(fullnameField);
+        panel.add(new javax.swing.JLabel("Password:"));
+        panel.add(passwordField);
+        panel.add(new javax.swing.JLabel("Confirm password:"));
+        panel.add(confirmField);
+
+        int result = javax.swing.JOptionPane.showConfirmDialog(
+                this,
+                panel,
+                "Add New User",
+                javax.swing.JOptionPane.OK_CANCEL_OPTION,
+                javax.swing.JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (result != javax.swing.JOptionPane.OK_OPTION) {
+            return;
+        }
+
+        String username = usernameField.getText().trim();
+        String fullname = fullnameField.getText().trim();
+        String password = new String(passwordField.getPassword());
+        String confirm = new String(confirmField.getPassword());
+
+        if (username.isEmpty() || fullname.isEmpty() || password.isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(this, "All fields are required.", "Validation Error", javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        if (!password.equals(confirm)) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Passwords do not match.", "Validation Error", javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // register the user
+        boolean isRegistered = new RegisterRepositoryImpl().registerUser(username, password, fullname);
+
+        if (isRegistered) {
+            javax.swing.JOptionPane.showMessageDialog(this, "User added successfully!", "Success", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            loadTables();
+        } else {
+            javax.swing.JOptionPane.showMessageDialog(this, "Failed to add user. Username may already exist.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_jButton6ActionPerformed
 
+    // edit user
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton8ActionPerformed
 
+    
+    // delete the user
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton9ActionPerformed
+
+
+    void loadTables(){
+        users.clear();
+        tableModel.setRowCount(0);
+
+        try {
+            users = registerRepo.getUsers();
+            for (UserModel user : users) {
+                Object[] rowData = {
+                        user.getId(),
+                        user.getUsername(),
+                        user.getFullname()
+                };
+                tableModel.addRow(rowData);
+            }
+
+        } catch (Exception e) {
+            logger.log(java.util.logging.Level.SEVERE, null, e);
+        }
+
+    }
 
     /**
      * @param args the command line arguments

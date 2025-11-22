@@ -1,8 +1,11 @@
 package com.example.Java.Library.Management.System.repository;
 
+import com.example.Java.Library.Management.System.model.UserModel;
 import com.example.Java.Library.Management.System.services.SQliteConnection;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 abstract class RegisterRepository {
     public abstract boolean registerUser(String username, String password, String fullnanme);
@@ -60,5 +63,25 @@ public class RegisterRepositoryImpl extends RegisterRepository {
             throw new RuntimeException("Failed to check fullname existence", e);
         }
         return false;
+    }
+
+    public List<UserModel> getUsers() {
+        List<UserModel> users = new ArrayList<>();
+        String sql = "SELECT id, fullname, username FROM user";
+        try (Connection conn = SQliteConnection.connect();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                UserModel user = new UserModel(
+                        rs.getString("id"),
+                        rs.getString("fullname"),
+                        rs.getString("username")
+                );
+                users.add(user);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to retrieve users", e);
+        }
+        return users;
     }
 }
