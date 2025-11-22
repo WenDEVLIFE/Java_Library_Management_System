@@ -10,13 +10,15 @@ import java.util.List;
 abstract class RegisterRepository {
     public abstract boolean registerUser(String username, String password, String fullnanme);
 
+    public abstract boolean addUser(String username, String password, String fullname, String role);
+
     public abstract boolean isUserExists(String username);
 
     public abstract boolean isFullnameExists(String fullname);
 
     public abstract List<UserModel> getUsers();
 
-    public abstract boolean editUser(String id, String username, String fullname, String password);
+    public abstract boolean editUser(String id, String username, String fullname, String password, String role);
 
     public abstract boolean deleteUserById(String userId);
 }
@@ -32,7 +34,27 @@ public class RegisterRepositoryImpl extends RegisterRepository {
             ps.setString(1, username);
             ps.setString(2, password); // store hashed password
             ps.setString(3, fullname);
-            ps.setString(4, "admin");
+            ps.setString(4, "user");
+            int rowsAffected = ps.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("User inserted: " + username);
+            }
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to insert user", e);
+        }
+    }
+
+    @Override
+    public boolean addUser(String username, String password, String fullname, String role) {
+
+        String sql = "INSERT INTO user (username, password, fullname, role) VALUES (?, ?, ?, ?)";
+        try (Connection conn = SQliteConnection.connect();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, username);
+            ps.setString(2, password); // store hashed password
+            ps.setString(3, fullname);
+            ps.setString(4, role);
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected > 0) {
                 System.out.println("User inserted: " + username);
@@ -88,7 +110,8 @@ public class RegisterRepositoryImpl extends RegisterRepository {
                 UserModel user = new UserModel(
                         rs.getString("id"),
                         rs.getString("fullname"),
-                        rs.getString("username")
+                        rs.getString("username"),
+                        rs.getString("role")
                 );
                 users.add(user);
             }
@@ -99,7 +122,7 @@ public class RegisterRepositoryImpl extends RegisterRepository {
     }
 
     @Override
-    public boolean editUser(String id, String username, String fullname, String password) {
+    public boolean editUser(String id, String username, String fullname, String password, String role) {
         // Build SQL depending on whether password should be updated
         String sql;
         boolean updatePassword = !password.isEmpty();
@@ -117,9 +140,11 @@ public class RegisterRepositoryImpl extends RegisterRepository {
             ps.setString(2, fullname);
             if (updatePassword) {
                 ps.setString(3, password);
-                ps.setInt(4, userId);
+                ps.setString(4, role);
+                ps.setInt(5, userId);
             } else {
-                ps.setInt(3, userId);
+                ps.setString(3, role);
+                ps.setInt(4, userId);
             }
 
             int rows = ps.executeUpdate();

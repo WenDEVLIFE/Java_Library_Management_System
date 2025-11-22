@@ -37,7 +37,7 @@ public class AdminUserView extends javax.swing.JFrame {
         setTitle("Library Managemetn System - User Management ");
 
         // set the tables
-        String [] columnNames = {"ID", "Username", "Full Name"};
+        String [] columnNames = {"ID", "Username", "Full Name", "Role"};
         tableModel = new DefaultTableModel(columnNames, 0);
         jTable1.setModel(tableModel);
         loadTables();
@@ -68,7 +68,8 @@ public class AdminUserView extends javax.swing.JFrame {
                         Object[] rowData = {
                                 user.getId(),
                                 user.getUsername(),
-                                user.getFullname()
+                                user.getFullname(),
+                                user.getRole()
                         };
                         tableModel.addRow(rowData);
                     }
@@ -310,12 +311,15 @@ public class AdminUserView extends javax.swing.JFrame {
         javax.swing.JTextField fullnameField = new javax.swing.JTextField();
         javax.swing.JPasswordField passwordField = new javax.swing.JPasswordField();
         javax.swing.JPasswordField confirmField = new javax.swing.JPasswordField();
+        final javax.swing.JComboBox<String> roleComboBox = new javax.swing.JComboBox<>(new String[]{"admin", "user"});
 
         javax.swing.JPanel panel = new javax.swing.JPanel(new java.awt.GridLayout(0, 1, 5, 5));
         panel.add(new javax.swing.JLabel("Username:"));
         panel.add(usernameField);
         panel.add(new javax.swing.JLabel("Full name:"));
         panel.add(fullnameField);
+        panel.add(new javax.swing.JLabel("Select a role:"));
+        panel.add(roleComboBox);
         panel.add(new javax.swing.JLabel("Password:"));
         panel.add(passwordField);
         panel.add(new javax.swing.JLabel("Confirm password:"));
@@ -337,6 +341,7 @@ public class AdminUserView extends javax.swing.JFrame {
         String fullname = fullnameField.getText().trim();
         String password = new String(passwordField.getPassword());
         String confirm = new String(confirmField.getPassword());
+        String role = (String) roleComboBox.getSelectedItem();
 
         if (username.isEmpty() || fullname.isEmpty() || password.isEmpty()) {
             javax.swing.JOptionPane.showMessageDialog(this, "All fields are required.", "Validation Error", javax.swing.JOptionPane.WARNING_MESSAGE);
@@ -348,7 +353,7 @@ public class AdminUserView extends javax.swing.JFrame {
         }
 
         // register the user
-        boolean isRegistered = new RegisterRepositoryImpl().registerUser(username, password, fullname);
+        boolean isRegistered = new RegisterRepositoryImpl().addUser(username, password, fullname, role);
 
         if (isRegistered) {
             javax.swing.JOptionPane.showMessageDialog(this, "User added successfully!", "Success", javax.swing.JOptionPane.INFORMATION_MESSAGE);
@@ -372,12 +377,16 @@ public class AdminUserView extends javax.swing.JFrame {
         final javax.swing.JTextField fullnameField = new javax.swing.JTextField(selectedUser.getFullname());
         final javax.swing.JPasswordField passwordField = new javax.swing.JPasswordField();
         final javax.swing.JPasswordField confirmField = new javax.swing.JPasswordField();
+        final javax.swing.JComboBox<String> roleComboBox = new javax.swing.JComboBox<>(new String[]{"admin", "user"});
+        roleComboBox.setSelectedItem(selectedUser.getRole());
 
         javax.swing.JPanel panel = new javax.swing.JPanel(new java.awt.GridLayout(0, 1, 5, 5));
         panel.add(new javax.swing.JLabel("Username:"));
         panel.add(usernameField);
         panel.add(new javax.swing.JLabel("Full name:"));
         panel.add(fullnameField);
+        panel.add(new javax.swing.JLabel("Select a role:"));
+        panel.add(roleComboBox);
         panel.add(new javax.swing.JLabel("New password (leave blank to keep current):"));
         panel.add(passwordField);
         panel.add(new javax.swing.JLabel("Confirm new password:"));
@@ -400,6 +409,8 @@ public class AdminUserView extends javax.swing.JFrame {
         String password = new String(passwordField.getPassword()).trim();
         String confirm = new String(confirmField.getPassword()).trim();
         String userId = selectedUser.getId();
+        String role = (String) roleComboBox.getSelectedItem();
+
 
         if (username.isEmpty() || fullname.isEmpty()) {
             javax.swing.JOptionPane.showMessageDialog(this, "Username and full name are required.", "Validation Error", javax.swing.JOptionPane.WARNING_MESSAGE);
@@ -410,7 +421,7 @@ public class AdminUserView extends javax.swing.JFrame {
             return;
         }
 
-        boolean isUpdated = registerRepo.editUser(userId, username, fullname, password);
+        boolean isUpdated = registerRepo.editUser(userId, username, fullname, password,role);
 
         if (isUpdated) {
             javax.swing.JOptionPane.showMessageDialog(this, "User updated successfully!", "Success", javax.swing.JOptionPane.INFORMATION_MESSAGE);
@@ -455,7 +466,8 @@ public class AdminUserView extends javax.swing.JFrame {
                 Object[] rowData = {
                         user.getId(),
                         user.getUsername(),
-                        user.getFullname()
+                        user.getFullname(),
+                        user.getRole()
                 };
                 tableModel.addRow(rowData);
             }

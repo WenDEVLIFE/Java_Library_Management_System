@@ -4,11 +4,13 @@ public class UserModel {
     final String id;
     final String fullname;
     final String username;
+    final String role;
 
-    public UserModel(String id, String fullname, String username) {
+    public UserModel(String id, String fullname, String username, String role) {
         this.id = id;
         this.fullname = fullname;
         this.username = username;
+        this.role = role;
     }
 
     public String getId() {
@@ -21,6 +23,10 @@ public class UserModel {
 
     public String getUsername() {
         return username;
+    }
+
+    public String getRole(){
+        return role;
     }
 
 
