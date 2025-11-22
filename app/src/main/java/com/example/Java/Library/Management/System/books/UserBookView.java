@@ -5,18 +5,31 @@
 package com.example.Java.Library.Management.System.books;
 
 import com.example.Java.Library.Management.System.auth.LoginView;
+import com.example.Java.Library.Management.System.model.BookModel;
+import com.example.Java.Library.Management.System.model.CategoryModel;
+import com.example.Java.Library.Management.System.repository.BookRepositoryImpl;
+import com.example.Java.Library.Management.System.repository.CategoryImpl;
 import com.formdev.flatlaf.intellijthemes.FlatArcDarkIJTheme;
-import javax.swing.UIManager;
+
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+
 import profile.ProfileView;
+
+import java.awt.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.List;
 
 /**
  *
  * @author wendevlife
  */
 public class UserBookView extends javax.swing.JFrame {
-    
+    private final BookRepositoryImpl bookRepo = new BookRepositoryImpl();
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(UserBookView.class.getName());
-
+    private final CategoryImpl categoryRepo = new CategoryImpl();
     /**
      * Creates new form UserBookView
      */
@@ -26,6 +39,50 @@ public class UserBookView extends javax.swing.JFrame {
         setResizable(false);
         setLocationRelativeTo(null);
         setTitle("Library Managemetn System - Books ");
+        loadBooksTable();
+
+        jTextField1.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+            @Override
+            public void insertUpdate(javax.swing.event.DocumentEvent e) {
+                filterBooks();
+            }
+
+            @Override
+            public void removeUpdate(javax.swing.event.DocumentEvent e) {
+                filterBooks();
+            }
+
+            @Override
+            public void changedUpdate(javax.swing.event.DocumentEvent e) {
+                filterBooks();
+            }
+
+            private void filterBooks() {
+                String searchText = jTextField1.getText().toLowerCase();
+                List<BookModel> books = bookRepo.findAll();
+                DefaultTableModel model = new DefaultTableModel(new Object[]{"ID", "Book Name", "ISBN", "Category"}, 0) {
+                    @Override
+                    public boolean isCellEditable(int row, int column) { return false; }
+                };
+                for (BookModel b : books) {
+                    if (b.getTitle().toLowerCase().contains(searchText)) {
+                        String categoryName = getCategoryNameById(b.getCategoryId());
+                        model.addRow(new Object[]{b.getId(), b.getTitle(), b.getIsbn(), categoryName});
+                    }
+                }
+                jTable1.setModel(model);
+            }
+        });
+    }
+    private String getCategoryNameById(Integer categoryId) {
+        if (categoryId == null) return "N/A";
+        List<CategoryModel> categories = categoryRepo.GetAllCategories();
+        for (CategoryModel cat : categories) {
+            if (cat.getCategoryId().equals(String.valueOf(categoryId))) {
+                return cat.getCategoryName();
+            }
+        }
+        return "Unknown";
     }
 
     /**
@@ -214,14 +271,68 @@ public class UserBookView extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jButton5ActionPerformed
 
+    // view book
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        // TODO add your handling code here:
+        // Open Book - View PDF
+        int row = jTable1.getSelectedRow();
+        if (row < 0) {
+            JOptionPane.showMessageDialog(this, "Select a book to open.", "No selection", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        Integer bookId = (Integer) jTable1.getValueAt(row, 0);
+        BookModel book = bookRepo.findById(bookId);
+        if (book == null) {
+            JOptionPane.showMessageDialog(this, "Book not found.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (book.getFileData() == null || book.getFileData().length == 0) {
+            JOptionPane.showMessageDialog(this, "No PDF file available for this book.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        try {
+            // Create a temporary file to store the PDF
+            File tempFile = File.createTempFile("book_" + book.getId() + "_", ".pdf");
+            tempFile.deleteOnExit();
+
+            // Write the PDF data to the temporary file
+            try (FileOutputStream fos = new FileOutputStream(tempFile)) {
+                fos.write(book.getFileData());
+            }
+
+            // Open the PDF with the default system viewer
+            if (Desktop.isDesktopSupported()) {
+                Desktop desktop = Desktop.getDesktop();
+                if (desktop.isSupported(Desktop.Action.OPEN)) {
+                    desktop.open(tempFile);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Cannot open PDF. No default application found.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Desktop operations not supported on this system.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this, "Error opening PDF: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField1ActionPerformed
 
+    private void loadBooksTable() {
+        List<BookModel> books = bookRepo.findAll();
+        DefaultTableModel model = new DefaultTableModel(new Object[]{"ID", "Book Name", "ISBN", "Category"}, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) { return false; }
+        };
+        for (BookModel b : books) {
+            String categoryName = getCategoryNameById(b.getCategoryId());
+            model.addRow(new Object[]{b.getId(), b.getTitle(), b.getIsbn(), categoryName});
+        }
+        jTable1.setModel(model);
+    }
     /**
      * @param args the command line arguments
      */

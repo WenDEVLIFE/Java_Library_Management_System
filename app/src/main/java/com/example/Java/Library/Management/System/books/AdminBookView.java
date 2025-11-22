@@ -45,6 +45,40 @@ public class AdminBookView extends javax.swing.JFrame {
         setLocationRelativeTo(null);
         setTitle("Library Managemetn System - Books ");
         loadBooksTable();
+
+        jTextField1.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+            @Override
+            public void insertUpdate(javax.swing.event.DocumentEvent e) {
+                filterBooks();
+            }
+
+            @Override
+            public void removeUpdate(javax.swing.event.DocumentEvent e) {
+                filterBooks();
+            }
+
+            @Override
+            public void changedUpdate(javax.swing.event.DocumentEvent e) {
+                filterBooks();
+            }
+
+            private void filterBooks() {
+                String searchText = jTextField1.getText().toLowerCase();
+                List<BookModel> books = bookRepo.findAll();
+                DefaultTableModel model = new DefaultTableModel(new Object[]{"ID", "Book Name", "ISBN", "Category"}, 0) {
+                    @Override
+                    public boolean isCellEditable(int row, int column) { return false; }
+                };
+                for (BookModel b : books) {
+                    if (b.getTitle().toLowerCase().contains(searchText)) {
+                        String categoryName = getCategoryNameById(b.getCategoryId());
+                        model.addRow(new Object[]{b.getId(), b.getTitle(), b.getIsbn(), categoryName});
+                    }
+                }
+                jTable1.setModel(model);
+            }
+        });
+
     }
 
     private void loadBooksTable() {
