@@ -7,14 +7,22 @@ package com.example.Java.Library.Management.System.categories;
 import com.example.Java.Library.Management.System.auth.LoginView;
 import com.example.Java.Library.Management.System.books.AdminBookView;
 import com.example.Java.Library.Management.System.dashboard.AdminDashboardView;
+import com.example.Java.Library.Management.System.model.CategoryModel;
+import com.example.Java.Library.Management.System.repository.CategoryImpl;
 import com.example.Java.Library.Management.System.user.AdminUserView;
+
+import javax.swing.table.DefaultTableModel;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author wendevlife
  */
 public class AdminCategoryView extends javax.swing.JFrame {
-    
+    CategoryImpl category = new CategoryImpl();
+    List<CategoryModel> categoryModelList  = new ArrayList<>();
+    DefaultTableModel model;
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(AdminCategoryView.class.getName());
 
     /**
@@ -26,6 +34,35 @@ public class AdminCategoryView extends javax.swing.JFrame {
         setResizable(false);
         setLocationRelativeTo(null);
         setTitle("Library Managemetn System - Categories ");
+
+        String [] columnNames = {"ID", "Category Name"};
+        model = new DefaultTableModel(columnNames, 0);
+        jTable1.setModel(model);
+        loadTables();
+
+        searchField.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+            @Override
+            public void insertUpdate(javax.swing.event.DocumentEvent e) {
+                filterTable();
+            }
+
+            @Override
+            public void removeUpdate(javax.swing.event.DocumentEvent e) {
+                filterTable();
+            }
+
+            @Override
+            public void changedUpdate(javax.swing.event.DocumentEvent e) {
+                filterTable();
+            }
+
+            private void filterTable() {
+                String searchText = searchField.getText().toLowerCase();
+                javax.swing.table.TableRowSorter<DefaultTableModel> sorter = new javax.swing.table.TableRowSorter<>(model);
+                jTable1.setRowSorter(sorter);
+                sorter.setRowFilter(javax.swing.RowFilter.regexFilter("(?i)" + searchText));
+            }
+        });
     }
 
     /**
@@ -48,7 +85,7 @@ public class AdminCategoryView extends javax.swing.JFrame {
         jButton9 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
-        jTextField1 = new javax.swing.JTextField();
+        searchField = new javax.swing.JTextField();
         jLabel13 = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
 
@@ -148,9 +185,9 @@ public class AdminCategoryView extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(jTable1);
 
-        jTextField1.setFont(new java.awt.Font("Helvetica Neue", 1, 18)); // NOI18N
-        jTextField1.setToolTipText("book name");
-        jTextField1.addActionListener(this::jTextField1ActionPerformed);
+        searchField.setFont(new java.awt.Font("Helvetica Neue", 1, 18)); // NOI18N
+        searchField.setToolTipText("book name");
+        searchField.addActionListener(this::searchFieldActionPerformed);
 
         jLabel13.setBackground(new java.awt.Color(255, 255, 255));
         jLabel13.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
@@ -175,7 +212,7 @@ public class AdminCategoryView extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel13)
                                 .addGap(26, 26, 26)
-                                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 952, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, 952, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(500, 500, 500)
                                 .addComponent(jLabel14))
@@ -200,7 +237,7 @@ public class AdminCategoryView extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel14)
                         .addGap(28, 28, 28)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(78, 78, 78)
                         .addComponent(jLabel13)))
@@ -251,21 +288,142 @@ public class AdminCategoryView extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jButton5ActionPerformed
 
+    // add categories
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        // TODO add your handling code here:
+        javax.swing.JTextField categoryField = new javax.swing.JTextField();
+
+        javax.swing.JPanel panel = new javax.swing.JPanel(new java.awt.GridLayout(0, 1, 5, 5));
+        panel.add(new javax.swing.JLabel("Category Name:"));
+        panel.add(categoryField);
+
+        int result = javax.swing.JOptionPane.showConfirmDialog(
+                this,
+                panel,
+                "Add New Category",
+                javax.swing.JOptionPane.OK_CANCEL_OPTION,
+                javax.swing.JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (result != javax.swing.JOptionPane.OK_OPTION) {
+            return;
+        }
+
+        String categoryName = categoryField.getText().trim();
+
+        if (categoryName.isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Category name cannot be empty.", "Input Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        boolean isCategory = category.AddCategory(categoryName);
+
+        if (isCategory) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Category added successfully!", "Success", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+          loadTables();
+        } else {
+            javax.swing.JOptionPane.showMessageDialog(this, "Failed to add category. Please try again.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_jButton6ActionPerformed
 
+    // edit categories
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        // TODO add your handling code here:
+     int selectedRow = jTable1.getSelectedRow();
+        if (selectedRow == -1) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Please select a category to edit.", "No Selection", javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        String currentCategoryId = jTable1.getValueAt(selectedRow, 0).toString();
+        String currentCategoryName = jTable1.getValueAt(selectedRow, 1).toString();
+
+        javax.swing.JTextField categoryField = new javax.swing.JTextField(currentCategoryName);
+
+        javax.swing.JPanel panel = new javax.swing.JPanel(new java.awt.GridLayout(0, 1, 5, 5));
+        panel.add(new javax.swing.JLabel("Category Name:"));
+        panel.add(categoryField);
+
+        int result = javax.swing.JOptionPane.showConfirmDialog(
+                this,
+                panel,
+                "Edit Category",
+                javax.swing.JOptionPane.OK_CANCEL_OPTION,
+                javax.swing.JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (result != javax.swing.JOptionPane.OK_OPTION) {
+            return;
+        }
+
+        String newCategoryName = categoryField.getText().trim();
+
+        if (newCategoryName.isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Category name cannot be empty.", "Input Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        boolean isEdited = category.editCategory(currentCategoryId, newCategoryName);
+
+        if (isEdited) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Category edited successfully!", "Success", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            loadTables();
+        } else {
+            javax.swing.JOptionPane.showMessageDialog(this, "Failed to edit category. Please try again.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_jButton8ActionPerformed
 
+    // delete category
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
-        // TODO add your handling code here:
+      int selectedRow = jTable1.getSelectedRow();
+        if (selectedRow == -1) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Please select a category to delete.", "No Selection", javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        String categoryId = jTable1.getValueAt(selectedRow, 0).toString();
+        String categoryName = jTable1.getValueAt(selectedRow, 1).toString();
+
+        int response = javax.swing.JOptionPane.showConfirmDialog(
+                this,
+                "Are you sure you want to delete the category: " + categoryName + "?",
+                "Confirm Deletion",
+                javax.swing.JOptionPane.YES_NO_OPTION
+        );
+
+        if (response != javax.swing.JOptionPane.YES_OPTION) {
+            return;
+        }
+
+        boolean isDeleted = category.deleteCategory(categoryId);
+
+        if (isDeleted) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Category deleted successfully!", "Success", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            loadTables();
+        } else {
+            javax.swing.JOptionPane.showMessageDialog(this, "Failed to delete category. Please try again.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_jButton9ActionPerformed
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+    private void searchFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchFieldActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
+    }//GEN-LAST:event_searchFieldActionPerformed
+
+
+    void loadTables(){
+        categoryModelList.clear();
+
+        model.setRowCount(0);
+
+        try {
+            categoryModelList = category.GetAllCategories();
+            for (CategoryModel cat : categoryModelList) {
+                Object[] rowData = {cat.getCategoryId(), cat.getCategoryName()};
+                model.addRow(rowData);
+            }
+
+        }catch (Exception e){
+            logger.log(java.util.logging.Level.SEVERE, null, e);
+        }
+    }
 
     /**
      * @param args the command line arguments
@@ -306,6 +464,6 @@ public class AdminCategoryView extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTextField searchField;
     // End of variables declaration//GEN-END:variables
 }

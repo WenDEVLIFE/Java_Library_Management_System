@@ -9,6 +9,16 @@ import java.util.List;
 
 abstract class RegisterRepository {
     public abstract boolean registerUser(String username, String password, String fullnanme);
+
+    public abstract boolean isUserExists(String username);
+
+    public abstract boolean isFullnameExists(String fullname);
+
+    public abstract List<UserModel> getUsers();
+
+    public abstract boolean editUser(String id, String username, String fullname, String password);
+
+    public abstract boolean deleteUserById(String userId);
 }
 
 
@@ -33,6 +43,7 @@ public class RegisterRepositoryImpl extends RegisterRepository {
         }
     }
 
+    @Override
     public boolean isUserExists(String username) {
         String sql = "SELECT COUNT(*) FROM user WHERE username = ?";
         try (Connection conn = SQliteConnection.connect();
@@ -49,6 +60,7 @@ public class RegisterRepositoryImpl extends RegisterRepository {
         return false;
     }
 
+    @Override
     public boolean isFullnameExists(String fullname) {
         String sql = "SELECT COUNT(*) FROM user WHERE fullname = ?";
         try (Connection conn = SQliteConnection.connect();
@@ -65,6 +77,7 @@ public class RegisterRepositoryImpl extends RegisterRepository {
         return false;
     }
 
+    @Override
     public List<UserModel> getUsers() {
         List<UserModel> users = new ArrayList<>();
         String sql = "SELECT id, fullname, username FROM user";
@@ -85,6 +98,7 @@ public class RegisterRepositoryImpl extends RegisterRepository {
         return users;
     }
 
+    @Override
     public boolean editUser(String id, String username, String fullname, String password) {
         // Build SQL depending on whether password should be updated
         String sql;
@@ -123,6 +137,7 @@ public class RegisterRepositoryImpl extends RegisterRepository {
         }
     }
 
+    @Override
     // delete the user
     public boolean deleteUserById(String userId) {
         String sql = "DELETE FROM user WHERE id = ?";
