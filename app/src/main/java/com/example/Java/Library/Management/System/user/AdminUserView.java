@@ -42,6 +42,40 @@ public class AdminUserView extends javax.swing.JFrame {
         jTable1.setModel(tableModel);
         loadTables();
 
+        searchField.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+            @Override
+            public void insertUpdate(javax.swing.event.DocumentEvent e) {
+                filterTable();
+            }
+
+            @Override
+            public void removeUpdate(javax.swing.event.DocumentEvent e) {
+                filterTable();
+            }
+
+            @Override
+            public void changedUpdate(javax.swing.event.DocumentEvent e) {
+                filterTable();
+            }
+
+            private void filterTable() {
+                String searchText = searchField.getText().toLowerCase();
+                tableModel.setRowCount(0); // Clear existing rows
+
+                for (UserModel user : users) {
+                    if (user.getUsername().toLowerCase().contains(searchText) ||
+                        user.getFullname().toLowerCase().contains(searchText)) {
+                        Object[] rowData = {
+                                user.getId(),
+                                user.getUsername(),
+                                user.getFullname()
+                        };
+                        tableModel.addRow(rowData);
+                    }
+                }
+            }
+        });
+
     }
 
     /**
@@ -61,7 +95,7 @@ public class AdminUserView extends javax.swing.JFrame {
         jButton5 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
-        jTextField1 = new javax.swing.JTextField();
+        searchField = new javax.swing.JTextField();
         jLabel13 = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
         jButton6 = new javax.swing.JButton();
@@ -145,9 +179,9 @@ public class AdminUserView extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(jTable1);
 
-        jTextField1.setFont(new java.awt.Font("Helvetica Neue", 1, 18)); // NOI18N
-        jTextField1.setToolTipText("book name");
-        jTextField1.addActionListener(this::jTextField1ActionPerformed);
+        searchField.setFont(new java.awt.Font("Helvetica Neue", 1, 18)); // NOI18N
+        searchField.setToolTipText("book name");
+        searchField.addActionListener(this::searchFieldActionPerformed);
 
         jLabel13.setBackground(new java.awt.Color(255, 255, 255));
         jLabel13.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
@@ -190,7 +224,7 @@ public class AdminUserView extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel13)
                                 .addGap(26, 26, 26)
-                                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 952, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, 952, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(202, 202, 202)
                                 .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -214,7 +248,7 @@ public class AdminUserView extends javax.swing.JFrame {
                         .addGap(25, 25, 25)
                         .addComponent(jLabel14)
                         .addGap(18, 18, 18)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(93, 93, 93)
                         .addComponent(jLabel13)))
@@ -265,9 +299,9 @@ public class AdminUserView extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jButton5ActionPerformed
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+    private void searchFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchFieldActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
+    }//GEN-LAST:event_searchFieldActionPerformed
 
     // add user
     // Java
@@ -326,13 +360,88 @@ public class AdminUserView extends javax.swing.JFrame {
 
     // edit user
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton8ActionPerformed
+        int selectedRow = jTable1.getSelectedRow();
+        if (selectedRow == -1) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Please select a user to edit.", "No Selection", javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // get selected user model (list 'users' is populated by loadTables)
+        UserModel selectedUser = users.get(selectedRow);
+        final javax.swing.JTextField usernameField = new javax.swing.JTextField(selectedUser.getUsername());
+        final javax.swing.JTextField fullnameField = new javax.swing.JTextField(selectedUser.getFullname());
+        final javax.swing.JPasswordField passwordField = new javax.swing.JPasswordField();
+        final javax.swing.JPasswordField confirmField = new javax.swing.JPasswordField();
+
+        javax.swing.JPanel panel = new javax.swing.JPanel(new java.awt.GridLayout(0, 1, 5, 5));
+        panel.add(new javax.swing.JLabel("Username:"));
+        panel.add(usernameField);
+        panel.add(new javax.swing.JLabel("Full name:"));
+        panel.add(fullnameField);
+        panel.add(new javax.swing.JLabel("New password (leave blank to keep current):"));
+        panel.add(passwordField);
+        panel.add(new javax.swing.JLabel("Confirm new password:"));
+        panel.add(confirmField);
+
+        int result = javax.swing.JOptionPane.showConfirmDialog(
+                this,
+                panel,
+                "Edit User",
+                javax.swing.JOptionPane.OK_CANCEL_OPTION,
+                javax.swing.JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (result != javax.swing.JOptionPane.OK_OPTION) {
+            return;
+        }
+
+        String username = usernameField.getText().trim();
+        String fullname = fullnameField.getText().trim();
+        String password = new String(passwordField.getPassword()).trim();
+        String confirm = new String(confirmField.getPassword()).trim();
+        String userId = selectedUser.getId();
+
+        if (username.isEmpty() || fullname.isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Username and full name are required.", "Validation Error", javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        if (!password.isEmpty() && !password.equals(confirm)) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Passwords do not match.", "Validation Error", javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        boolean isUpdated = registerRepo.editUser(userId, username, fullname, password);
+
+        if (isUpdated) {
+            javax.swing.JOptionPane.showMessageDialog(this, "User updated successfully!", "Success", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            loadTables();
+        } else {
+            javax.swing.JOptionPane.showMessageDialog(this, "Failed to update user.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+
+    }////GEN-LAST:event_jButton8ActionPerformed
 
     
     // delete the user
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
-        // TODO add your handling code here:
+
+        int selectedRow = jTable1.getSelectedRow();
+        if (selectedRow == -1) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Please select a user to delete.", "No Selection", javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        String userId = users.get(selectedRow).getId();
+
+        int response = javax.swing.JOptionPane.showConfirmDialog(this, "Are you sure you want to delete the selected user?", "Confirm Deletion", javax.swing.JOptionPane.YES_NO_OPTION);
+        if (response != javax.swing.JOptionPane.YES_OPTION) {
+            boolean isDeleted = registerRepo.deleteUserById(userId);
+            if (isDeleted) {
+                javax.swing.JOptionPane.showMessageDialog(this, "User deleted successfully!", "Success", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                loadTables();
+            }
+
+        }
     }//GEN-LAST:event_jButton9ActionPerformed
 
 
@@ -396,6 +505,6 @@ public class AdminUserView extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTextField searchField;
     // End of variables declaration//GEN-END:variables
 }
